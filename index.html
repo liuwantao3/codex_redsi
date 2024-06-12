@@ -6,13 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Codex - Your AI</title>
     
-    <script type="module" crossorigin src="/codex_client/assets/index-79d23ac4.js"></script>
-    <link rel="stylesheet" href="/codex_client/assets/index-4f6f04f2.css">
+    <script type="module" crossorigin src="/codex_redsi/assets/index-a216b065.js"></script>
+    <link rel="stylesheet" href="/codex_redsi/assets/index-d55599ed.css">
   </head>
   <body>
     <nav>
       <a href="#" id="logout_link">Logout</a>
       <a href="#" id="profile_link">Profile</a>
+      <a href="#" id="chat_link">Chat</a>
     </nav>
     <div id="app">
       <div id="login_container" style="display:none">
@@ -43,24 +44,54 @@
         <p>Already have an account? <a href="#" id="login_link">Log in</a></p>
       </div>
 
-      <div id="chat_container" style="display:none">
-        <div id="message_container"></div>
+      <div id="app_layout">
 
-        <form id="chat_form">
-          <textarea name="prompt" rows="1" cols="1" placeholder="Ask Codex..."></textarea>
-          <button type="submit"><img src="/codex_client/assets/send-246d4b43.svg" alt="send" /></button>
-        </form>
+        <div id="side_bar">
+          <div id="file_list">
+            <form id="uploadForm">
+              <div id="file_selector">
+                <button type="button">选择文件</button>
+                <input type="file" id="fileInput" />
+              </div>
+              <div id="fileName">文件名</div>
+              <button type="button" id="uploadFile">分析</button>
+            </form>
+          </div>
+          <div id="file_content_area">
+            <textarea id="file_content" rows=40 placeholder="文件预览..."></textarea>
+            <div id="fade-effect"></div>
+          </div>
+        </div>
+
+        <div id="analysis_container">
+          <div id="analysis_content">
+            <div id="loadingIndicator" style="display:none;">分析文章中<span id="loadingDots"></span></div>
+            <div id="analysis_result"></div>
+            <div id="chartsContainer"></div>
+            <div id="justifications"></div>
+          </div>
+        </div>
+
+        <div id="chat_container" style="display:none">
+          <div id="message_container"></div>
+          <form id="chat_form">
+            <textarea name="prompt" rows="1" cols="1" placeholder="Ask Codex..."></textarea>
+            <button type="submit"><img src="/codex_redsi/assets/send-246d4b43.svg" alt="send" /></button>
+          </form>
+        </div>
       </div>
-    </div>
 
+    
     
     
     <script>
       const signinLink = document.getElementById("signin_link");
       const loginLink = document.getElementById("login_link");
+      const toggleChat = document.getElementById("chat_link");
       const loginContainer = document.getElementById("login_container");
       const signinContainer = document.getElementById("signin_container");
       const chatContainer = document.getElementById("chat_container");
+
 
       signinLink.addEventListener("click", (event) => {
         event.preventDefault();
@@ -73,6 +104,17 @@
         signinContainer.style.display = "none";
         loginContainer.style.display = "block";
       });
+
+      // Add a click event listener to the profile link
+      toggleChat.addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the default behavior of the link
+        // Your profile code here
+        if (localStorage.getItem('jwtToken')){
+          chatContainer.style.display === "flex" ? chatContainer.style.display = "none" : chatContainer.style.display = "flex";
+        } else alert("Please login first!");
+        console.log("toggleChat clicked!");
+      });
+
       /*
       // Listen for the beforeunload event
       window.addEventListener('beforeunload', () => {
