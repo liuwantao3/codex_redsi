@@ -155,6 +155,16 @@ input[type="file"] {
   transition: background-color 0.3s ease;
 }
 
+#analysis_container button {
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
 #file_content_area {
   display: flex;
   flex-direction: column;
@@ -174,6 +184,26 @@ input[type="file"] {
   resize: none;
   font-size: 14px;
   overflow: hidden;
+}
+
+#alter_image_form textarea {
+  width: 100%;
+  height: 100%;
+  background-color: #dcdcdc;
+  color: #000;
+  border: none;
+  resize: none;
+  font-size: 14px;
+  overflow: hidden;
+}
+
+#alter_image_form {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+#altered_image_canvas {
+  background-color:rgb(224, 237, 237);
 }
 
 /* Fade-out effect */
@@ -361,6 +391,15 @@ button {
   border: 0;
   cursor: pointer;
   background: transparent;
+}
+
+#submit_to_analysis {
+  background: #4caf50;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  height: 60px;
+  width: 60px;
 }
 
 #chat_form img {

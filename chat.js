@@ -1,5 +1,7 @@
 import bot from './assets/bot.svg'
 import user from './assets/user.svg'
+import { renderMarkdown } from './markdown.js';
+
 
 const chatContainer = document.querySelector('#chat_container');
 const chatForm = document.querySelector('#chat_form');
@@ -71,7 +73,7 @@ const handleSubmit = async (e) => {
     e.preventDefault()
 
     const data = new FormData(chatForm)
-
+    //console.log(data.get('prompt'))
     // user's chatstripe
     messageContainer.innerHTML += chatStripe(false, data.get('prompt'))
 
@@ -119,7 +121,9 @@ const handleSubmit = async (e) => {
         const data = await response.json();
         const parsedData = data.bot.trim() // trims any trailing spaces/'\n' 
 
-        typeText(messageDiv, parsedData);
+        //typeText(messageDiv, renderMarkdown(parsedData));
+        messageDiv.innerHTML = renderMarkdown(parsedData);
+        messageContainer.scrollTop = messageContainer.scrollHeight;
     } else {
         const err = await response.text()
 

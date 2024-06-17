@@ -56,17 +56,42 @@
             </form>
           </div>
           <div id="file_content_area">
+            <img id="image_content" style="max-width: 100%; height: auto;" />
             <textarea id="file_content" rows=40 placeholder="文件预览..."></textarea>
             <div id="fade-effect"></div>
           </div>
         </div>
 
         <div id="analysis_container">
-          <div id="analysis_content">
-            <div id="loadingIndicator" style="display:none;">分析文章中<span id="loadingDots"></span></div>
-            <div id="analysis_result"></div>
-            <div id="chartsContainer"></div>
-            <div id="justifications"></div>
+          <div id="loadingIndicator" style="display:none;">分析文章中<span id="loadingDots"></span></div>
+          <div id="analysis_result"></div>
+          <div id="chartsContainer"></div>
+          <div id="justifications"></div>
+          <div id="recommendations"></div>
+          <div id="analysis_alter_images">
+            <h3>粘贴到这里：</h3>
+            <div id="alter_images">
+              <canvas id="altered_image_canvas" width="800" height="400">
+                浏览器不支持canvas
+                <!-- canvas标签内的内容只有在浏览器不支持canvas的情况下才显示出来 -->
+              </canvas>
+              <br/>
+              <label for="strokeColorSelect">画笔颜色:</label>
+              <select id="strokeColorSelect">
+                  <option value="black">黑色</option>
+                  <option value="blue">蓝色</option>
+                  <option value="green">绿色</option>
+                  <option value="yellow">黄色</option>
+                  <option value="red">红色</option>
+              </select>
+              <br/>
+              <label for="strokeLineWidth">线条宽度:</label>
+              <input type="number" id="strokeLineWidth">
+            </div>
+            <form id="alter_image_form">
+              <textarea id="image_comments" name="comments" rows="10" placeholder="补充说明..."></textarea>
+              <button id="submit_to_analysis" type="submit">分析图片</button>
+            </form>
           </div>
         </div>
 
@@ -82,6 +107,7 @@
     <script type="module" src="auth.js"></script>
     <script type="module" src="chat.js"></script>
     <script type="module" src="upload.js"></script>
+    <script type="module" src="canvas.js"></script>
     <script>
       const signinLink = document.getElementById("signin_link");
       const loginLink = document.getElementById("login_link");
@@ -110,7 +136,7 @@
         if (localStorage.getItem('jwtToken')){
           chatContainer.style.display === "flex" ? chatContainer.style.display = "none" : chatContainer.style.display = "flex";
         } else alert("Please login first!");
-        console.log("toggleChat clicked!");
+        //console.log("toggleChat clicked!");
       });
 
       /*

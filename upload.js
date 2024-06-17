@@ -1,10 +1,15 @@
 import * as mammoth from 'mammoth';
 import { renderMarkdown } from './markdown';
 import { drawPieChart } from './pie_chart.js';
+import { analyzeImg } from './image.js';
+import * as pdfjsLib from 'pdfjs-dist/webpack';
+
+
+let contentType = 'text/plain';
 
 const MAX_PROMPT_LEN = 34000;
 
-async function uploadFile() {
+async function analyzeText() {
 
     const token = localStorage.getItem('jwtToken');
 
@@ -50,11 +55,10 @@ async function uploadFile() {
         loadingIndicator.style.display = 'none';
         const data = await response.json();
         const parsedData = data.bot.trim() // trims any trailing spaces/'\n' 
-        console.log("Received JSON:", parsedData);
+
         //document.getElementById('analysis_result').innerHTML = renderMarkdown(parsedData);
         //document.getElementById('analysis_result').innerHTML = data.bot;
         drawPieChart(parsedData);
-        console.log('Success:', parsedData);
 
     } catch (error) {
         console.error('Error:', error);
@@ -67,7 +71,11 @@ const fileInput = document.getElementById('fileInput');
 const fileNameDisplay = document.getElementById('fileName');
 
 uploadFileLink.addEventListener("click", async (event) => {
-    await uploadFile();
+    if (contentType === 'image/jpeg') {
+        return await analyzeImg(document.getElementById('image_content').src, '');
+    } else {
+        return await analyzeText();
+    }
 });
 
 // Event listener for the div
@@ -104,6 +112,16 @@ fileInput.addEventListener('change', function () {
             // Clean the text
             const cleanedText = result.value.replace(/\n\s*\n/g, '\n').trim(); 
             document.getElementById('file_content').textContent = cleanedText; // Display the cleaned text content
+            contentType = 'text/plain'; // Set the content type to text
+        };
+
+        const displayImageResult = function(base64) {
+            // Display the image using a data URL
+            document.getElementById('image_content').src = base64;
+            document.getElementById('file_content').textContent = ''; // Clear text content
+
+            // Set the content type to image
+            contentType = 'image/jpeg';
         };
 
         const handleError = function(error) {
@@ -119,9 +137,36 @@ fileInput.addEventListener('change', function () {
                    .then(displayDocxResult)
                    .then(updateFadeEffect)
                    .catch(handleError);
+        } else if (file.type === "image/jpeg" || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg')) {
+            const base64Image = `data:image/jpeg;base64,${btoa(new Uint8Array(e.target.result).reduce((data, byte) => data + String.fromCharCode(byte), ''))}`;
+            displayImageResult(base64Image);
+        } else if (file.type === 'application/pdf' || fileName.endsWith('.pdf')) {
+            //console.log('PDF file:', e.target.result);
+            const typedarray = new Uint8Array(e.target.result);
+            //console.log('Typed array:', typedarray);
+            pdfjsLib.getDocument(typedarray).promise.then(pdf => {
+                //console.log('PDF:', pdf);
+                const numPages = pdf.numPages;
+                let pageTextPromises = [];
+                for (let i = 1; i <= numPages; i++) {
+                    pageTextPromises.push(
+                        pdf.getPage(i).then(page => {
+                            return page.getTextContent().then(textContent => {
+                                return textContent.items.map(item => item.str).join(" ");
+                            });
+                        })
+                    );
+                }
+                Promise.all(pageTextPromises).then(pagesText => {
+                    document.getElementById('file_content').textContent = pagesText.join("\n\n");
+                });
+            }, err => {
+                console.error("Error: " + err);
+            });
+
         } else {
             alert('Unsupported file format. Please upload a text or DOCX file.');
-        }
+        };
 
     };
 
@@ -137,6 +182,9 @@ fileInput.addEventListener('change', function () {
     } else if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || fileName.endsWith('.docx')) {
         fileNameDisplay.textContent = fileName;
         reader.readAsArrayBuffer(file); // Read file as array buffer
+    } else if (file.type === "image/jpeg" || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || file.type === 'application/pdf' || fileName.endsWith('.pdf')) {
+        fileNameDisplay.textContent = fileName;
+        reader.readAsArrayBuffer(file); // Read file as array buffer
     } else {
         alert('Unsupported file format. Please upload a text or DOCX file.');
     }
@@ -148,12 +196,11 @@ const updateFadeEffect = () => {
     const container = document.getElementById('file_content_area');
     const fadeEffect = document.getElementById('fade-effect');
 
-    console.log('Scroll height:', textArea.scrollHeight);
-    console.log('Client height:', container.clientHeight);
     if (textArea.scrollHeight > container.clientHeight) {
         fadeEffect.style.display = 'block';
     } else {
         fadeEffect.style.display = 'none';
     }
 };
+
 

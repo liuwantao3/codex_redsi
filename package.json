@@ -15,8 +15,12 @@
     "buffer": "^6.0.3",
     "chart.js": "^4.4.3",
     "highlight.js": "^11.9.0",
+    "katex": "^0.16.10",
+    "latex.js": "^0.12.6",
     "mammoth": "^1.7.2",
     "markdown-it": "^14.1.0",
-    "markdown-it-highlightjs": "^4.1.0"
+    "markdown-it-highlightjs": "^4.1.0",
+    "mathjax": "^3.2.2",
+    "pdfjs-dist": "^4.3.136"
   }
 }
