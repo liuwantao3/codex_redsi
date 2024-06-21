@@ -178,7 +178,7 @@ input[type="file"] {
 #file_content_area textarea {
   width: 100%;
   height: 100%;
-  background-color: #dcdcdc;
+  background-color: white;
   color: #000;
   border: none;
   resize: none;
@@ -186,10 +186,38 @@ input[type="file"] {
   overflow: hidden;
 }
 
+#alter_images{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 100%;
+  background-color: #dcdcdc;
+  border-radius: 5px;
+  margin: 0 auto;
+}
+
+#alter_image_controls {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  background-color: #dcdcdc;
+  border-radius: 5px;
+  margin: 5px;
+}
+
+#alter_image_controls .button {
+  background-color: transparent;
+  color: #000;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
 #alter_image_form textarea {
   width: 100%;
   height: 100%;
-  background-color: #dcdcdc;
+  background-color: white;
   color: #000;
   border: none;
   resize: none;
@@ -200,10 +228,13 @@ input[type="file"] {
 #alter_image_form {
   max-width: 1280px;
   margin: 0 auto;
+  box-shadow: #cfcdcd 0px 0px 10px;
 }
 
 #altered_image_canvas {
   background-color:rgb(224, 237, 237);
+  width:800px;
+  height:400px;
 }
 
 /* Fade-out effect */
@@ -224,6 +255,7 @@ input[type="file"] {
   height: 100%;;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 10px;
   max-height: 100%;
   background-color: #dcdcdc;

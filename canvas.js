@@ -10,6 +10,7 @@ function adjustCanvasSize(canvas, width, height) {
     canvas.getContext('2d').scale(pixelRatio, pixelRatio);
 }
 
+let erasing = false; // eraser mode flag
 const canvasForm = document.getElementById('alter_image_form');
 const imageComments = document.getElementById('image_comments');
 
@@ -42,10 +43,35 @@ let lineColor = '#000';  //默认线条颜色为黑色
 let lineWidth = 5;
 strokeLineWidth.value = lineWidth; //初始化输入框的值,显示初始线条宽度
 
-canvas.addEventListener('init', () => {
-    //console.log('Canvas loaded');
+// Set up tool buttons
+const pencilBtn = document.getElementById('pencilBtn');
+pencilBtn.addEventListener('click', () => {
+    erasing = false;
+    // Optionally, change the cursor or provide feedback that the pencil tool is selected
+    canvas.style.cursor = 'crosshair'; 
+    pencilBtn.style.backgroundColor = 'lightblue';
+    eraserBtn.style.backgroundColor = 'transparent';
+    strokeLineWidth.value = 5; // Set pencil width to 5 by default
+    lineWidth = 5; // Set pencil width to 5 by default
+});
+
+const eraserBtn = document.getElementById('eraserBtn');
+eraserBtn.addEventListener('click', () => {
+    erasing = true;
+    // Optionally, change the cursor or provide feedback that the eraser tool is selected
+    canvas.style.cursor = 'cell'; // Change cursor to cell for eraser
+
+    pencilBtn.style.backgroundColor = 'transparent';
+    eraserBtn.style.backgroundColor = 'lightblue';
+    strokeLineWidth.value = 30; // Set eraser width to 30 by default
+    lineWidth = 30; // Set eraser width to 30 by default
+});
+
+const clearBtn = document.getElementById('clearBtn');
+clearBtn.addEventListener('click', () => {
     ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, drawWidth, drawHeight);
 });
 
 //添加鼠标移动事件
@@ -85,7 +111,8 @@ function draw(event) {
         ctx.beginPath();
         ctx.moveTo(oldX, oldY);
         ctx.lineTo(newX, newY);
-        ctx.strokeStyle = lineColor;
+        //ctx.strokeStyle = lineColor;
+        ctx.strokeStyle = erasing ? 'white' : lineColor; // eraser uses white color
         ctx.lineWidth = lineWidth;
         ctx.lineCap = 'round';
         ctx.stroke();
@@ -156,4 +183,70 @@ window.addEventListener('load', () => {
 
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+    ctx.fillStyle = 'grey';
+    ctx.lineWidth = 1;
+    ctx.font = '12px Arial';
+    ctx.fillText('请粘贴到这里...', 10, 30);
+
+    canvas.style.cursor = 'crosshair';
+
+    pencilBtn.style.backgroundColor = 'lightblue';
+    eraserBtn.style.backgroundColor = 'transparent';
 });
+
+window.addEventListener('resize', () => {
+    //adjustCanvasSize(canvas, canvas.offsetWidth, canvas.offsetHeight);
+}
+);
+
+// set up touch events for mobile and writing pad
+canvas.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    var touch = e.touches[0];
+    var mouseEvent = new MouseEvent("mousedown", {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+    });
+    canvas.dispatchEvent(mouseEvent);
+}, false);
+
+canvas.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    var mouseEvent = new MouseEvent("mouseup", {});
+    canvas.dispatchEvent(mouseEvent);
+}
+, false);
+
+canvas.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+    var touch = e.touches[0];
+    var mouseEvent = new MouseEvent("mousemove", {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+    });
+    canvas.dispatchEvent(mouseEvent);
+}
+, false);
+
+// Prevent scrolling when touching the canvas
+document.body.addEventListener('touchstart', function(e) {
+    if (e.target == canvas) {
+        e.preventDefault();
+    }
+}
+, false);
+
+document.body.addEventListener('touchend', function(e) {
+    if (e.target == canvas) {
+        e.preventDefault();
+    }
+}
+, false);
+
+document.body.addEventListener('touchmove', function(e) {
+    if (e.target == canvas) {
+        e.preventDefault();
+    }
+}
+, false);
