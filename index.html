@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Codex - Your AI</title>
     
-    <script type="module" crossorigin src="/codex_redsi/assets/index-d963c4b5.js"></script>
-    <link rel="stylesheet" href="/codex_redsi/assets/index-e13bbd28.css">
+    <script type="module" crossorigin src="/codex_redsi/assets/index-d4b8ae16.js"></script>
+    <link rel="stylesheet" href="/codex_redsi/assets/index-3c0f898f.css">
   </head>
   <body>
     <nav>
@@ -71,24 +71,28 @@
           <div id="justifications"></div>
           <div id="recommendations"></div>
           <div id="analysis_alter_images">
-            <h3>粘贴到这里：</h3>
             <div id="alter_images">
               <canvas id="altered_image_canvas" width="800" height="400">
                 浏览器不支持canvas
                 <!-- canvas标签内的内容只有在浏览器不支持canvas的情况下才显示出来 -->
               </canvas>
-              <br/>
-              <label for="strokeColorSelect">画笔颜色:</label>
-              <select id="strokeColorSelect">
-                  <option value="black">黑色</option>
-                  <option value="blue">蓝色</option>
-                  <option value="green">绿色</option>
-                  <option value="yellow">黄色</option>
-                  <option value="red">红色</option>
-              </select>
-              <br/>
-              <label for="strokeLineWidth">线条宽度:</label>
-              <input type="number" id="strokeLineWidth">
+              <div id="alter_image_controls">
+                <br/>
+                <div id="pencilBtn" class="button">Pencil</div>
+                <div id="eraserBtn" class="button">Eraser</div>
+                <div id="clearBtn" class="button">Clear</div>
+                <label for="strokeColorSelect">画笔颜色:</label>
+                <select id="strokeColorSelect">
+                    <option value="black">黑色</option>
+                    <option value="blue">蓝色</option>
+                    <option value="green">绿色</option>
+                    <option value="yellow">黄色</option>
+                    <option value="red">红色</option>
+                </select>
+                <br/>
+                <label for="strokeLineWidth">线条宽度:</label>
+                <input type="number" id="strokeLineWidth">
+              </div>
             </div>
             <form id="alter_image_form">
               <textarea id="image_comments" name="comments" rows="10" placeholder="补充说明..."></textarea>
