@@ -52,21 +52,53 @@ function generateUniqueId() {
 }
 
 function chatStripe(isAi, value, uniqueId) {
-    return (
-        `
-        <div class="wrapper ${isAi && 'ai'}">
-            <div class="chat">
-                <div class="profile">
-                    <img 
-                      src=${isAi ? bot : user} 
-                      alt="${isAi ? 'bot' : 'user'}" 
-                    />
+
+    // return (
+    //     `
+    //     <div class="wrapper ${isAi && 'ai'}">
+    //         <div class="chat">
+    //             <div class="profile">
+    //                 <img 
+    //                 src=${isAi ? bot : user} 
+    //                 alt="${isAi ? 'bot' : 'user'}" 
+    //                 />
+    //             </div>
+    //             <div class="message" id=${uniqueId}>${value}</div>
+    //         </div>
+    //     </div>
+    // `
+    // )
+
+    if(isAi) {
+        return (
+            `
+            <div class="wrapper ai">
+                <div class="chat">
+                    <div class="profile">
+                        <img src=${bot} alt="bot"/>
+                    </div>
+                    <div class="message" id=${uniqueId}>${value}</div>
+                    <div class="placeholder"></div>
                 </div>
-                <div class="message" id=${uniqueId}>${value}</div>
             </div>
-        </div>
-    `
-    )
+        `
+        )
+    } else {
+        return (
+            `
+            <div class="wrapper user">
+                <div class="chat">
+                    <div class="placeholder"></div>
+                    <div class="message">${value}</div>
+                    <div class="profile">
+                        <img src=${user} alt="user"/>
+                    </div>
+                </div>
+            </div>
+        `
+        )
+    }
+
 }
 
 const handleSubmit = async (e) => {
