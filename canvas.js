@@ -71,7 +71,6 @@ const clearBtn = document.getElementById('clearBtn');
 clearBtn.addEventListener('click', () => {
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(img, 0, 0, drawWidth, drawHeight);
 });
 
 //添加鼠标移动事件
