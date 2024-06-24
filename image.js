@@ -1,7 +1,7 @@
 // Description: This file contains the functions to handle image analysis.
 import renderMathInElement from "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.mjs";
 import { renderMarkdown } from './markdown.js';
-import { parse, HtmlGenerator } from 'latex.js';
+//import { parse, HtmlGenerator } from 'latex.js';
 
 export async function analyzeImg(url, comments) {
 
@@ -11,7 +11,7 @@ export async function analyzeImg(url, comments) {
 
     // Show loading indicator
     const loadingIndicator = document.getElementById('loadingIndicator');
-    loadingIndicator.style.display = 'block';
+    loadingIndicator.style.display = 'flex';
 
     document.getElementById('analysis_result').innerHTML = '';
     document.getElementById('chartsContainer').innerHTML = '';

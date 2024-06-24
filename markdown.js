@@ -4,10 +4,10 @@ import hljs from 'highlight.js/lib/core';
 import python from 'highlight.js/lib/languages/python';
 import javascript from 'highlight.js/lib/languages/javascript';
 import html from 'highlight.js/lib/languages/xml';
-import latex from 'highlight.js/lib/languages/latex';
-import { drawPieChart } from './pie_chart.js';
-import { parse, HtmlGenerator } from 'latex.js';
-import katex from 'katex';
+//import latex from 'highlight.js/lib/languages/latex';
+//import { drawPieChart } from './pie_chart.js';
+//import { parse, HtmlGenerator } from 'latex.js';
+//import katex from 'katex';
 
 export function renderMarkdown(content) {
 
@@ -24,15 +24,16 @@ export function renderMarkdown(content) {
       const token = tokens[idx];
       const language = token.info.trim();
 
-          // Todo: Add latex support, worked 1/9/2024
     if (language === 'latex') {
 
-      let generator = new HtmlGenerator({ hyphenate: false });
+      // Latex support not working yet -- 2024/6/24
 
-      let doc = parse(token.content, { generator: generator }).htmlDocument();
+      // let generator = new HtmlGenerator({ hyphenate: false });
 
-      //return katex.renderToString(token.content, {throwOnError: false});
-      return doc;
+      // let doc = parse(token.content, { generator: generator }).htmlDocument();
+
+      // //return katex.renderToString(token.content, {throwOnError: false});
+      // return doc;
 
     }
   

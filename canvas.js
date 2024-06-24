@@ -249,3 +249,22 @@ document.body.addEventListener('touchmove', function(e) {
     }
 }
 , false);
+
+// Add event listeners to the textarea when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', () => {
+    const imageComment = document.getElementById('image_comments');
+
+    imageComment.addEventListener('focus', () => {
+        // Store the placeholder text
+        imageComment.dataset.placeholder = imageComment.placeholder;
+        // Remove placeholder text on focus
+        imageComment.placeholder = '';
+    });
+
+    imageComment.addEventListener('blur', () => {
+        // Restore placeholder text on blur if textarea is empty
+        if (imageComment.value === '') {
+            imageComment.placeholder = imageComment.dataset.placeholder;
+        }
+    });
+});

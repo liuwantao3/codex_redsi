@@ -1,43 +1,44 @@
-import bot from './assets/bot.svg'
-import user from './assets/user.svg'
+import bot from './assets/bot.svg';
+import user from './assets/user.svg';
 import { renderMarkdown } from './markdown.js';
 
 
 const chatContainer = document.querySelector('#chat_container');
 const chatForm = document.querySelector('#chat_form');
+const textArea = chatForm.querySelector('textarea[name="prompt"]');
 const messageContainer = document.querySelector('#message_container');
 
-let loadInterval
+let loadInterval;
 
 function loader(element) {
-    element.textContent = ''
+    element.textContent = '.';
 
     loadInterval = setInterval(() => {
         // Update the text content of the loading indicator
         element.textContent += '.';
 
         // If the loading indicator has reached three dots, reset it
-        if (element.textContent === '....') {
-            element.textContent = '';
+        if (element.textContent === '.....') {
+            element.textContent = '.';
         }
     }, 300);
 }
 
 function typeText(element, text) {
-    let index = 0
+    let index = 0;
 
     let interval = setInterval(() => {
         if (index < text.length) {
-            element.innerHTML += text.charAt(index)
-            index++
+            element.innerHTML += text.charAt(index);
+            index++;
         } else {
-            clearInterval(interval)
+            clearInterval(interval);
         }
 
         // to focus scroll to the bottom
         element.scrollTop = element.scrollHeight;
         messageContainer.scrollTop = messageContainer.scrollHeight;
-    }, 20)
+    }, 20);
 }
 
 // generate unique ID for each message div of bot
@@ -82,7 +83,7 @@ function chatStripe(isAi, value, uniqueId) {
                 </div>
             </div>
         `
-        )
+        );
     } else {
         return (
             `
@@ -96,34 +97,34 @@ function chatStripe(isAi, value, uniqueId) {
                 </div>
             </div>
         `
-        )
+        );
     }
 
 }
 
 const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const data = new FormData(chatForm)
+    const data = new FormData(chatForm);
     //console.log(data.get('prompt'))
     // user's chatstripe
-    messageContainer.innerHTML += chatStripe(false, data.get('prompt'))
+    messageContainer.innerHTML += chatStripe(false, data.get('prompt'));
 
     // to clear the textarea input 
-    chatForm.reset()
+    chatForm.reset();
 
     // bot's chatstripe
-    const uniqueId = generateUniqueId()
-    messageContainer.innerHTML += chatStripe(true, " ", uniqueId)
+    const uniqueId = generateUniqueId();
+    messageContainer.innerHTML += chatStripe(true, " ", uniqueId);
 
     // to focus scroll to the bottom 
     messageContainer.scrollTop = messageContainer.scrollHeight; 
 
     // specific message div 
-    const messageDiv = document.getElementById(uniqueId)
+    const messageDiv = document.getElementById(uniqueId);
 
     // messageDiv.innerHTML = "..."
-    loader(messageDiv)
+    loader(messageDiv);
 
     const token = localStorage.getItem('jwtToken');
     const response = await fetch("https://openaiserverlwt.azurewebsites.net",{
@@ -136,10 +137,10 @@ const handleSubmit = async (e) => {
         body: JSON.stringify({
             prompt: data.get('prompt')
         })
-    })
+    });
 
-    clearInterval(loadInterval)
-    messageDiv.innerHTML = " "
+    clearInterval(loadInterval);
+    messageDiv.innerHTML = " ";
 
     if (response.status === 401 || response.status === 403) {
       const loginContainer = document.getElementById("login_container");
@@ -151,16 +152,16 @@ const handleSubmit = async (e) => {
       localStorage.removeItem('jwtToken');
     } else if (response.ok) {
         const data = await response.json();
-        const parsedData = data.bot.trim() // trims any trailing spaces/'\n' 
+        const parsedData = data.bot.trim(); // trims any trailing spaces/'\n' 
 
         //typeText(messageDiv, renderMarkdown(parsedData));
         messageDiv.innerHTML = renderMarkdown(parsedData);
         messageContainer.scrollTop = messageContainer.scrollHeight;
     } else {
-        const err = await response.text()
+        const err = await response.text();
 
-        messageDiv.innerHTML = "Something went wrong"
-        alert(err)
+        messageDiv.innerHTML = "Something went wrong";
+        alert(err);
     }
 }
 
@@ -168,7 +169,21 @@ const handleSubmit = async (e) => {
 chatForm.addEventListener('submit', handleSubmit);
 chatForm.addEventListener('keyup', (e) => {
   if (e.keyCode === 13) {
-      handleSubmit(e)
+      handleSubmit(e);
   }
 })
+
+textArea.addEventListener('focus', () => {
+    // Store the placeholder text
+    textArea.dataset.placeholder = textArea.placeholder;
+    // Remove placeholder text on focus
+    textArea.placeholder = '';
+});
+
+textArea.addEventListener('blur', () => {
+    // Restore placeholder text on blur if textarea is empty
+    if (textArea.value === '') {
+        textArea.placeholder = textArea.dataset.placeholder;
+    }
+});
 

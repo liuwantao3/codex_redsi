@@ -2,7 +2,7 @@ import * as mammoth from 'mammoth';
 import { renderMarkdown } from './markdown';
 import { drawPieChart } from './pie_chart.js';
 import { analyzeImg } from './image.js';
-import * as pdfjsLib from 'pdfjs-dist/webpack';
+//import * as pdfjsLib from 'pdfjs-dist/webpack';
 
 
 let contentType = 'text/plain';
@@ -23,7 +23,7 @@ async function analyzeText() {
 
     // Show loading indicator
     const loadingIndicator = document.getElementById('loadingIndicator');
-    loadingIndicator.style.display = 'block';
+    loadingIndicator.style.display = 'flex';
 
     document.getElementById('analysis_result').innerHTML = '';
     document.getElementById('chartsContainer').innerHTML = '';
@@ -72,7 +72,7 @@ const fileNameDisplay = document.getElementById('fileName');
 
 uploadFileLink.addEventListener("click", async (event) => {
     if (contentType === 'image/jpeg') {
-        return await analyzeImg(document.getElementById('image_content').src, '');
+        return await analyzeImg(document.getElementById('image_content').src, document.getElementById('file_content').value);
     } else {
         return await analyzeText();
     }
@@ -105,21 +105,22 @@ fileInput.addEventListener('change', function () {
         const displayTextResult = function(content) {
             // Clean the text by removing empty lines
             const cleanedText = content.replace(/\n\s*\n/g, '\n').trim(); 
-            document.getElementById('file_content').textContent = cleanedText; // Display the cleaned text content
+            document.getElementById('file_content').value = cleanedText; // Display the cleaned text content
         };
 
         const displayDocxResult = function(result) {
             // Clean the text
             const cleanedText = result.value.replace(/\n\s*\n/g, '\n').trim(); 
-            document.getElementById('file_content').textContent = cleanedText; // Display the cleaned text content
+            document.getElementById('file_content').value = cleanedText; // Display the cleaned text content
             contentType = 'text/plain'; // Set the content type to text
         };
 
         const displayImageResult = function(base64) {
             // Display the image using a data URL
             document.getElementById('image_content').src = base64;
-            document.getElementById('file_content').textContent = ''; // Clear text content
-
+            const fileComment = document.getElementById('file_content');
+            fileComment.value = ''; // Clear text content
+            fileComment.placeholder = '如果有补充的说明或要求，请写在这里...'; // Set placeholder text
             // Set the content type to image
             contentType = 'image/jpeg';
         };
@@ -133,6 +134,7 @@ fileInput.addEventListener('change', function () {
             displayTextResult(content);
         } else if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || fileName.endsWith('.docx')) {
             const arrayBuffer = e.target.result; // The file content as an array buffer
+            document.getElementById('image_content').src = ''; // Clear the image content
             mammoth.extractRawText({ arrayBuffer: arrayBuffer })
                    .then(displayDocxResult)
                    .then(updateFadeEffect)
@@ -140,29 +142,31 @@ fileInput.addEventListener('change', function () {
         } else if (file.type === "image/jpeg" || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg')) {
             const base64Image = `data:image/jpeg;base64,${btoa(new Uint8Array(e.target.result).reduce((data, byte) => data + String.fromCharCode(byte), ''))}`;
             displayImageResult(base64Image);
+            updateFadeEffect();
         } else if (file.type === 'application/pdf' || fileName.endsWith('.pdf')) {
+            // Display the PDF file content -- does not work yet 2024/6/24
             //console.log('PDF file:', e.target.result);
-            const typedarray = new Uint8Array(e.target.result);
+            //const typedarray = new Uint8Array(e.target.result);
             //console.log('Typed array:', typedarray);
-            pdfjsLib.getDocument(typedarray).promise.then(pdf => {
-                //console.log('PDF:', pdf);
-                const numPages = pdf.numPages;
-                let pageTextPromises = [];
-                for (let i = 1; i <= numPages; i++) {
-                    pageTextPromises.push(
-                        pdf.getPage(i).then(page => {
-                            return page.getTextContent().then(textContent => {
-                                return textContent.items.map(item => item.str).join(" ");
-                            });
-                        })
-                    );
-                }
-                Promise.all(pageTextPromises).then(pagesText => {
-                    document.getElementById('file_content').textContent = pagesText.join("\n\n");
-                });
-            }, err => {
-                console.error("Error: " + err);
-            });
+            // pdfjsLib.getDocument(typedarray).promise.then(pdf => {
+            //     //console.log('PDF:', pdf);
+            //     const numPages = pdf.numPages;
+            //     let pageTextPromises = [];
+            //     for (let i = 1; i <= numPages; i++) {
+            //         pageTextPromises.push(
+            //             pdf.getPage(i).then(page => {
+            //                 return page.getTextContent().then(textContent => {
+            //                     return textContent.items.map(item => item.str).join(" ");
+            //                 });
+            //             })
+            //         );
+            //     }
+            //     Promise.all(pageTextPromises).then(pagesText => {
+            //         document.getElementById('file_content').textContent = pagesText.join("\n\n");
+            //     });
+            // }, err => {
+            //     console.error("Error: " + err);
+            // });
 
         } else {
             alert('Unsupported file format. Please upload a text or DOCX file.');
@@ -202,5 +206,24 @@ const updateFadeEffect = () => {
         fadeEffect.style.display = 'none';
     }
 };
+
+// Add event listeners to the textarea when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', () => {
+    const fileComment = document.getElementById('file_content');
+
+    fileComment.addEventListener('focus', () => {
+        // Store the placeholder text
+        fileComment.dataset.placeholder = fileComment.placeholder;
+        // Remove placeholder text on focus
+        fileComment.placeholder = '';
+    });
+
+    fileComment.addEventListener('blur', () => {
+        // Restore placeholder text on blur if textarea is empty
+        if (fileComment.value === '') {
+            fileComment.placeholder = fileComment.dataset.placeholder;
+        }
+    });
+});
 
 
