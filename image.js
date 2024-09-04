@@ -40,36 +40,44 @@ export async function analyzeImg(url, comments) {
             })
         });
 
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+        if (response.status === 401 || response.status === 403) {
+            const loginContainer = document.getElementById("login_container");
+            loginContainer.style.display = "block";
+      
+            //chatContainer.style.display = 'none';
+      
+            //messageContainer.innerHTML = ''; //clean the previous chat contents and token
+            localStorage.removeItem('jwtToken');
+        } else {
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+    
+            loadingIndicator.style.display = 'none';
+            const data = await response.json();
+            const parsedData = data.bot.trim() // trims any trailing spaces/'\n' 
+    
+            document.getElementById('analysis_result').innerHTML = parsedData;
+            
+            renderMathInElement(document.getElementById('analysis_result'), {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                    // {left: '\\begin{equation}', right: '\\end{equation}', display: true},
+                    // {left: '\\begin{equation*}', right: '\\end{equation*}', display: true}
+                ],
+                ignoredTags: [
+                    'script', 'noscript', 'style', 'textarea', 'annotation', 'annotation-xml'
+                ],
+                throwOnError : false,
+                output : 'mathml'
+              });
+
         }
-
-        loadingIndicator.style.display = 'none';
-        const data = await response.json();
-        const parsedData = data.bot.trim() // trims any trailing spaces/'\n' 
-
-        document.getElementById('analysis_result').innerHTML = parsedData;
-        
-        renderMathInElement(document.getElementById('analysis_result'), {
-            delimiters: [
-                {left: '$$', right: '$$', display: true},
-                {left: '$', right: '$', display: false},
-                {left: '\\(', right: '\\)', display: false},
-                {left: '\\[', right: '\\]', display: true}
-                // {left: '\\begin{equation}', right: '\\end{equation}', display: true},
-                // {left: '\\begin{equation*}', right: '\\end{equation*}', display: true}
-            ],
-            ignoredTags: [
-                'script', 'noscript', 'style', 'textarea', 'annotation', 'annotation-xml'
-            ],
-            throwOnError : false,
-            output : 'mathml'
-          });
-
-        //   let doc = document.getElementById('analysis_result').innerHTML;
-        //   console.log("After Latex rendering:", doc);
-        //   document.getElementById('analysis_result').innerHTML = renderMarkdown(doc);
-
+    
     } catch (error) {
         console.error('Error:', error);
     }

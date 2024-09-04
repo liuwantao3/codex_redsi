@@ -48,17 +48,27 @@ async function analyzeText() {
             })
         });
 
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+        if (response.status === 401 || response.status === 403) {
+            const loginContainer = document.getElementById("login_container");
+            loginContainer.style.display = "block";
+      
+            //chatContainer.style.display = 'none';
+      
+            //messageContainer.innerHTML = ''; //clean the previous chat contents and token
+            localStorage.removeItem('jwtToken');
+        } else {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+    
+            loadingIndicator.style.display = 'none';
+            const data = await response.json();
+            const parsedData = data.bot.trim() // trims any trailing spaces/'\n' 
+    
+            //document.getElementById('analysis_result').innerHTML = renderMarkdown(parsedData);
+            //document.getElementById('analysis_result').innerHTML = data.bot;
+            drawPieChart(parsedData);
         }
-
-        loadingIndicator.style.display = 'none';
-        const data = await response.json();
-        const parsedData = data.bot.trim() // trims any trailing spaces/'\n' 
-
-        //document.getElementById('analysis_result').innerHTML = renderMarkdown(parsedData);
-        //document.getElementById('analysis_result').innerHTML = data.bot;
-        drawPieChart(parsedData);
 
     } catch (error) {
         console.error('Error:', error);
